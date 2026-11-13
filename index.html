@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Photo Sorter</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📸</text></svg>">
+<style>
+  :root {
+    --bg: #0b0d14;
+    --card: #151824;
+    --card-hover: #1e2233;
+    --accent: #2563eb;
+    --accent-light: #3b82f6;
+    --accent-glow: rgba(37, 99, 235, 0.35);
+    --green: #10b981;
+    --green-bg: #064e3b;
+    --danger: #ef4444;
+    --danger-bg: #450a0a;
+    --text: #f8fafc;
+    --muted: #94a3b8;
+    --border: #23283c;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+
+  header {
+    background: var(--card);
+    border-bottom: 1px solid var(--border);
+    padding: 10px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    z-index: 10;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    min-width: 240px;
+  }
+
+  .badge-progress {
+    background: #1e3a8a;
+    color: #bfdbfe;
+    font-weight: 700;
+    font-size: 13px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    letter-spacing: 0.5px;
+    white-space: nowrap;
+  }
+
+  .filename {
+    font-size: 14px;
+    color: var(--muted);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-weight: 600;
+    max-width: 240px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-center {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    max-width: 480px;
+  }
+
+  .progress-bar-bg {
+    flex: 1;
+    height: 6px;
+    background: var(--border);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #3b82f6, #10b981);
+    width: 0%;
+    transition: width 0.15s ease-out;
+  }
+
+  .header-right {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .folder-badge {
+    font-size: 13px;
+    color: #93c5fd;
+    background: rgba(59, 130, 246, 0.12);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    padding: 5px 12px;
+    border-radius: 6px;
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-weight: 600;
+  }
+
+  .btn-dir {
+    background: var(--card-hover);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 6px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.15s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-dir:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: white;
+  }
+
+  main {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 12px;
+    min-height: 0;
+  }
+
+  .image-wrapper {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+
+  #main-image {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+    image-orientation: from-image;
+    border-radius: 8px;
+    box-shadow: 0 12px 36px rgba(0,0,0,0.65);
+    transition: opacity 0.12s ease;
+  }
+  #main-image.loading {
+    opacity: 0.6;
+  }
+
+  .nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(21, 24, 36, 0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 5;
+  }
+  .nav-btn:hover {
+    background: var(--accent);
+    color: white;
+    transform: translateY(-50%) scale(1.08);
+  }
+  .nav-btn.prev { left: 24px; }
+  .nav-btn.next { right: 24px; }
+
+  .toast {
+    position: absolute;
+    top: 24px;
+    background: #064e3b;
+    color: #a7f3d0;
+    border: 1px solid #059669;
+    padding: 9px 20px;
+    border-radius: 999px;
+    font-weight: 700;
+    font-size: 14px;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-12px);
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+    z-index: 20;
+  }
+  .toast.show {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .toast.delete {
+    background: #7f1d1d;
+    color: #fecaca;
+    border-color: #dc2626;
+  }
+
+  .empty-screen {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: var(--bg);
+    z-index: 8;
+  }
+  .empty-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    padding: 50px 48px;
+    max-width: 480px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 24px 60px rgba(0,0,0,0.65);
+  }
+  .empty-icon {
+    font-size: 58px;
+    margin-bottom: 16px;
+  }
+  .empty-card h2 {
+    font-size: 22px;
+    margin-bottom: 10px;
+    color: var(--text);
+  }
+  .empty-card p {
+    font-size: 14px;
+    color: var(--muted);
+    margin-bottom: 30px;
+    line-height: 1.5;
+  }
+  .btn-primary-large {
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    font-size: 16px;
+    font-weight: 700;
+    padding: 15px 34px;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 18px var(--accent-glow);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .btn-primary-large:hover {
+    background: var(--accent-light);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px var(--accent-glow);
+  }
+
+  footer {
+    background: var(--card);
+    border-top: 1px solid var(--border);
+    padding: 12px 24px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+    transition: opacity 0.2s ease;
+  }
+
+  .status-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 28px;
+    font-size: 13px;
+  }
+  .status-label {
+    color: var(--muted);
+    font-weight: 600;
+  }
+  .tags-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    align-items: center;
+  }
+  .tag {
+    background: var(--green-bg);
+    color: #6ee7b7;
+    border: 1px solid #059669;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 3px 10px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .action-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex: 0 0 320px;
+  }
+
+  .folder-input {
+    width: 100%;
+    background: #0b0d14;
+    border: 2px solid var(--border);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 8px;
+    font-size: 15px;
+    font-weight: 600;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .folder-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .folder-input::placeholder {
+    color: #475569;
+    font-weight: normal;
+  }
+
+  .btn-submit {
+    background: var(--accent);
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-submit:hover {
+    background: var(--accent-light);
+  }
+
+  .btn-delete {
+    background: var(--danger-bg);
+    color: #fca5a5;
+    border: 1px solid #7f1d1d;
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .btn-delete:hover {
+    background: var(--danger);
+    color: #fff;
+    border-color: var(--danger);
+  }
+
+  .kbd-hint {
+    background: rgba(0,0,0,0.3);
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 4px;
+  }
+
+  .quick-chips-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 2px 0;
+    flex: 1;
+  }
+  .quick-label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .chip-btn {
+    background: var(--card-hover);
+    color: var(--text);
+    border: 1px solid var(--border);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.12s ease;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .chip-btn:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .chip-btn.copied {
+    background: var(--green-bg);
+    color: #a7f3d0;
+    border-color: #059669;
+  }
+
+  .shortcuts-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid rgba(255,255,255,0.06);
+    padding-top: 8px;
+  }
+  .shortcut-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  kbd {
+    background: #1e2233;
+    color: #f1f5f9;
+    border: 1px solid #333950;
+    border-bottom: 2px solid #333950;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-family: inherit;
+    font-weight: 700;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <div class="badge-progress" id="progress-badge">Poza 0 / 0</div>
+    <div class="filename" id="filename-text">-</div>
+  </div>
+
+  <div class="header-center">
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progress-bar"></div>
+    </div>
+  </div>
+
+  <div class="header-right">
+    <span class="folder-badge" id="folder-name-badge" style="display: none;">📁 -</span>
+    <button class="btn-dir" id="btn-change-dir" title="Alege alt folder">📁 Alege alt folder</button>
+  </div>
+</header>
+
+<main>
+  <button class="nav-btn prev" id="btn-prev" title="Poza anterioara (Sageata stanga)">‹</button>
+  <div class="image-wrapper">
+    <img id="main-image" src="" alt="Poza" />
+    <div class="toast" id="toast">✓ Copiata</div>
+  </div>
+  <button class="nav-btn next" id="btn-next" title="Poza urmatoare (Sageata dreapta)">›</button>
+
+  <div class="empty-screen" id="empty-screen">
+    <div class="empty-card">
+      <div class="empty-icon">📁</div>
+      <h2 id="empty-title">Selecteaza folderul cu poze</h2>
+      <p id="empty-desc">Alege folderul care contine pozele pentru a incepe sortarea rapida.</p>
+      <div>
+        <button class="btn-primary-large" id="btn-empty-choose">
+          📂 Alege folder cu poze
+        </button>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="status-row">
+    <span class="status-label">Copiata in:</span>
+    <div class="tags-list" id="current-tags">
+      <span style="color: #64748b; font-style: italic;">(niciun folder inca)</span>
+    </div>
+  </div>
+
+  <div class="action-row">
+    <div class="input-wrapper">
+      <input
+        type="text"
+        class="folder-input"
+        id="folder-input"
+        placeholder="Tasteaza nume folder..."
+        autocomplete="off"
+        autofocus
+      />
+    </div>
+
+    <button class="btn-submit" id="btn-submit">
+      Copiaza <span class="kbd-hint">Enter</span>
+    </button>
+
+    <button class="btn-delete" id="btn-delete" title="Sterge poza definitiv de pe disc">
+      🗑️ Sterge poza <span class="kbd-hint" id="del-kbd-btn">Del</span>
+    </button>
+
+    <div class="quick-chips-wrapper" id="quick-chips">
+      <span class="quick-label">Foldere rapide:</span>
+    </div>
+  </div>
+
+  <div class="shortcuts-row">
+    <div class="shortcut-item">
+      <span>Tasteaza numele + <kbd>Enter</kbd> = Copiaza in folder</span>
+    </div>
+    <div class="shortcut-item">
+      <span><kbd>→</kbd> = Urmatoarea poza</span>
+    </div>
+    <div class="shortcut-item">
+      <span><kbd>←</kbd> = Poza anterioara</span>
+    </div>
+    <div class="shortcut-item">
+      <span><kbd>ESC</kbd> = Sterge textul tastat</span>
+    </div>
+    <div class="shortcut-item">
+      <span><kbd id="del-legend-hint">Del</kbd> = Sterge poza definitiv</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Detectare OS
+  const isMac = (navigator.platform && navigator.platform.toUpperCase().indexOf('MAC') >= 0) ||
+                (navigator.userAgent && navigator.userAgent.toUpperCase().indexOf('MAC') >= 0);
+
+  let state = {
+    source_dir: '',
+    folder_name: '',
+    total: 0,
+    current_index: 0,
+    current_file: '',
+    copied_folders: [],
+    known_folders: []
+  };
+
+  let navSeq = 0;
+
+  const imgEl = document.getElementById('main-image');
+  const badgeEl = document.getElementById('progress-badge');
+  const filenameEl = document.getElementById('filename-text');
+  const barEl = document.getElementById('progress-bar');
+  const tagsEl = document.getElementById('current-tags');
+  const chipsEl = document.getElementById('quick-chips');
+  const inputEl = document.getElementById('folder-input');
+  const btnSubmit = document.getElementById('btn-submit');
+  const btnDelete = document.getElementById('btn-delete');
+  const toastEl = document.getElementById('toast');
+  const btnPrev = document.getElementById('btn-prev');
+  const btnNext = document.getElementById('btn-next');
+  const btnChangeDir = document.getElementById('btn-change-dir');
+  const folderNameBadge = document.getElementById('folder-name-badge');
+
+  const emptyScreen = document.getElementById('empty-screen');
+  const emptyTitle = document.getElementById('empty-title');
+  const emptyDesc = document.getElementById('empty-desc');
+  const btnEmptyChoose = document.getElementById('btn-empty-choose');
+  const footerEl = document.querySelector('footer');
+
+  const delShortcutText = isMac ? "⌘ + ⌫" : "Delete";
+  document.getElementById('del-kbd-btn').textContent = delShortcutText;
+  document.getElementById('del-legend-hint').textContent = delShortcutText;
+
+  let toastTimer = null;
+  function showToast(text, isDelete = false) {
+    toastEl.textContent = text;
+    if (isDelete) {
+      toastEl.classList.add('delete');
+    } else {
+      toastEl.classList.remove('delete');
+    }
+    toastEl.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastEl.classList.remove('show');
+      toastEl.classList.remove('delete');
+    }, 1800);
+  }
+
+  function updateUI() {
+    if (state.total === 0) {
+      emptyScreen.style.display = 'flex';
+      imgEl.style.display = 'none';
+      btnPrev.style.display = 'none';
+      btnNext.style.display = 'none';
+      footerEl.style.opacity = '0.3';
+      footerEl.style.pointerEvents = 'none';
+
+      badgeEl.textContent = "0 / 0";
+      filenameEl.textContent = "-";
+      barEl.style.width = '0%';
+
+      if (!state.source_dir) {
+        emptyTitle.textContent = "Selecteaza folderul cu poze";
+        emptyDesc.textContent = "Alege folderul care contine pozele pentru a incepe sortarea.";
+        folderNameBadge.style.display = 'none';
+      } else {
+        emptyTitle.textContent = "Nicio imagine gasita";
+        emptyDesc.textContent = `Folderul "${state.folder_name || state.source_dir}" nu contine imagini suportate (.jpg, .png, .heic etc.).`;
+        folderNameBadge.textContent = `📁 ${state.folder_name}`;
+        folderNameBadge.style.display = 'inline-block';
+      }
+      return;
+    }
+
+    emptyScreen.style.display = 'none';
+    imgEl.style.display = 'block';
+    btnPrev.style.display = 'flex';
+    btnNext.style.display = 'flex';
+    footerEl.style.opacity = '1';
+    footerEl.style.pointerEvents = 'auto';
+
+    folderNameBadge.textContent = `📁 ${state.folder_name}`;
+    folderNameBadge.style.display = 'inline-block';
+
+    const idx = state.current_index;
+    badgeEl.textContent = `Poza ${idx + 1} / ${state.total}`;
+    filenameEl.textContent = state.current_file;
+
+    const pct = ((idx + 1) / state.total) * 100;
+    barEl.style.width = pct + '%';
+
+    // Incarcare lina a imaginii
+    imgEl.classList.add('loading');
+    imgEl.onload = () => imgEl.classList.remove('loading');
+    imgEl.onerror = () => {
+      imgEl.classList.remove('loading');
+      filenameEl.textContent = `${state.current_file} (Format neacceptat de browser)`;
+    };
+    imgEl.src = `/image/${idx}?f=${encodeURIComponent(state.current_file)}`;
+
+    // Preincarcare silentioasa a urmatoarei imagini
+    if (idx + 1 < state.total) {
+      const preloadImg = new Image();
+      preloadImg.src = `/image/${idx + 1}`;
+    }
+
+    // Actualizare etichete foldere atribuite
+    if (state.copied_folders.length === 0) {
+      tagsEl.innerHTML = '<span style="color: #64748b; font-style: italic;">(niciun folder inca)</span>';
+    } else {
+      tagsEl.innerHTML = state.copied_folders.map(f =>
+        `<span class="tag">✓ ${f}</span>`
+      ).join('');
+    }
+
+    renderQuickChips();
+
+    // Resetare input pentru urmatoarea atribuire
+    inputEl.value = '';
+    inputEl.focus();
+  }
+
+  function renderQuickChips() {
+    const copiedSet = new Set(state.copied_folders);
+    let html = '<span class="quick-label">Foldere rapide:</span>';
+
+    if (state.known_folders.length === 0) {
+      html += '<span style="color: #64748b; font-size: 12px; font-style: italic;">(vor aparea aici pe masura ce le creezi)</span>';
+    } else {
+      state.known_folders.forEach(f => {
+        const isCopied = copiedSet.has(f);
+        const cls = isCopied ? 'chip-btn copied' : 'chip-btn';
+        const prefix = isCopied ? '✓' : '+';
+        html += `<button class="${cls}" onclick="copyToFolder('${f.replace(/'/g, "\\'")}')">${prefix} ${f}</button>`;
+      });
+    }
+    chipsEl.innerHTML = html;
+  }
+
+  async function fetchState() {
+    try {
+      const res = await fetch('/api/state');
+      state = await res.json();
+      updateUI();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  async function chooseFolderNative() {
+    const originalText = btnChangeDir.innerHTML;
+    btnChangeDir.innerHTML = "⏳ Se alege folderul...";
+    btnChangeDir.disabled = true;
+    if (btnEmptyChoose) btnEmptyChoose.disabled = true;
+
+    try {
+      const res = await fetch('/api/choose_dir', { method: 'POST' });
+      state = await res.json();
+      updateUI();
+    } catch (err) {
+      alert("Eroare la alegerea folderului: " + err);
+    } finally {
+      btnChangeDir.disabled = false;
+      btnChangeDir.innerHTML = originalText;
+      if (btnEmptyChoose) btnEmptyChoose.disabled = false;
+    }
+  }
+
+  async function copyToFolder(folderName) {
+    folderName = folderName.trim();
+    if (!folderName) return;
+
+    try {
+      const res = await fetch('/api/copy', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ folder: folderName })
+      });
+      const data = await res.json();
+      if (data.success) {
+        state.copied_folders = data.copied_folders;
+        state.known_folders = data.known_folders;
+        showToast(`✓ Copiata in folderul: ${data.folder}`, false);
+        updateUI();
+      } else {
+        alert("Eroare la copiere: " + data.error);
+      }
+    } catch (err) {
+      alert("Eroare la copiere: " + err);
+    }
+  }
+
+  async function deleteCurrentPhoto() {
+    if (state.total === 0) return;
+    const currentName = state.current_file;
+
+    try {
+      const res = await fetch('/api/delete', { method: 'POST' });
+      const data = await res.json();
+      if (data.success) {
+        state = data.state;
+        showToast(`🗑️ Poza a fost stearsa definitiv: ${currentName}`, true);
+        updateUI();
+      } else {
+        alert("Eroare la stergere: " + data.error);
+      }
+    } catch (err) {
+      alert("Eroare la comunicarea cu serverul: " + err);
+    }
+  }
+
+  async function navigate(delta) {
+    const currentSeq = ++navSeq;
+    try {
+      const res = await fetch('/api/navigate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ delta: delta })
+      });
+      const data = await res.json();
+      if (currentSeq === navSeq) {
+        state = data;
+        updateUI();
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  btnPrev.onclick = () => navigate(-1);
+  btnNext.onclick = () => navigate(1);
+
+  btnSubmit.onclick = () => {
+    const val = inputEl.value.trim();
+    if (val) copyToFolder(val);
+  };
+
+  btnDelete.onclick = () => deleteCurrentPhoto();
+  btnChangeDir.onclick = chooseFolderNative;
+  btnEmptyChoose.onclick = chooseFolderNative;
+
+  // Gestionare tastatura
+  window.addEventListener('keydown', (e) => {
+    if (state.total === 0) {
+      return;
+    }
+
+    // ESCAPE -> Goleste caseta de text
+    if (e.key === 'Escape') {
+      inputEl.value = '';
+      return;
+    }
+
+    // SAGETI -> Navigare fotografii (Sagetile stanga / dreapta)
+    if (e.key === 'ArrowLeft') {
+      e.preventDefault();
+      navigate(-1);
+      return;
+    }
+    if (e.key === 'ArrowRight') {
+      e.preventDefault();
+      navigate(1);
+      return;
+    }
+
+    // ENTER -> Confirmare copiere folder
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      const val = inputEl.value.trim();
+      if (val) {
+        copyToFolder(val);
+      }
+      return;
+    }
+
+    // DELETE -> Stergere imagini
+    // macOS: Command + Backspace (etichetata 'delete' pe Mac) sau Command + Delete
+    // Windows: Tasta Delete (cand caseta e goala sau cu Shift+Delete)
+    const isMacDelete = isMac && e.metaKey && (e.key === 'Backspace' || e.key === 'Delete');
+    const isWinDelete = !isMac && (e.key === 'Delete' || (e.ctrlKey && e.key === 'd'));
+
+    if (isMacDelete) {
+      e.preventDefault();
+      deleteCurrentPhoto();
+      return;
+    }
+
+    if (isWinDelete) {
+      if (!inputEl.value.trim() || e.shiftKey) {
+        e.preventDefault();
+        deleteCurrentPhoto();
+        return;
+      }
+    }
+
+    // Orice tasta de caractere normale redirectioneaza focusul in caseta de text
+    if (document.activeElement !== inputEl && e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      inputEl.focus();
+    }
+  });
+
+  fetchState();
+</script>
+
+</body>
+</html>
+
