@@ -1,93 +1,108 @@
-# 📸 Wedding & Event Photo Sorter
+# 📸 Photo Sorter & Organizer
 
-> **O aplicație simplă, rapidă și sigură pentru oricine dorește să organizeze mii de fotografii de la evenimente (nunți, botezuri, aniversări, vacanțe) în doar câteva minute, direct de pe tastatură.**
+> **O aplicație ultra-rapidă, sigură și intuitivă pentru sortarea și organizarea oricărei colecții mari de fotografii (vacanțe, evenimente, ședințe foto, arhive de familie, portofolii sau proiecte personale) în doar câteva minute, direct de pe tastatură.**
+
+---
+
+## 🚀 Descărcare & Pornire Rapidă (Quick Start)
+
+Nu ai nevoie de instalări complicate, baze de date sau biblioteci suplimentare (`pip`). Ai nevoie doar de **Python 3** (preinstalat pe Mac, gratuit din Microsoft Store pe Windows).
+
+Alege metoda preferată de descărcare:
+
+### Metoda 1: Prin Git (Recomandat — doar 3 comenzi)
+
+Deschide **Terminal** (pe Mac) sau **Command Prompt / PowerShell** (pe Windows) și rulează:
+
+```bash
+# 1. Clonează proiectul pe calculatorul tău
+git clone https://github.com/cosmin-panescu/Photo-Sorter.git
+
+# 2. Navighează în folderul proiectului
+cd Photo-Sorter
+
+# 3. Pornește aplicația
+python3 sort_photos.py   # pe macOS / Linux
+python sort_photos.py    # pe Windows
+```
+
+---
+
+### Metoda 2: Fără Git (Descărcare directă ca fișier ZIP)
+
+Dacă nu ai Git instalat sau preferi o descărcare clasică:
+1. Apasă pe butonul verde **`Code`** din partea de sus a paginii de GitHub, apoi dă click pe **`Download ZIP`**.
+2. Dezarhivează fișierul descărcat pe Desktop (vei obține folderul `Photo-Sorter-main`).
+3. Deschide Terminalul / Command Prompt în acel folder:
+   - **Pe Mac:** tastează `cd ~/Desktop/Photo-Sorter-main && python3 sort_photos.py`
+   - **Pe Windows:** intră în folder, dă click dreapta și alege *„Open in Terminal”*, apoi scrie `python sort_photos.py`
+
+🎉 **Gata!** Browserul tău (Safari, Chrome, Edge sau Firefox) se va deschide automat la adresa `http://127.0.0.1:8765`.
 
 ---
 
 ## 🎯 Ce face această aplicație?
 
-Dacă ai primit un folder uriaș cu poze de la nuntă sau un eveniment (2.000 – 5.000+ de fotografii) și vrei să le trimiți fiecărui invitat pozele în care apare, sortarea manuală în foldere poate dura zile întregi.
+Dacă ai un folder cu sute sau mii de fotografii (2.000 – 10.000+ de fișiere) și vrei să le sortezi pe categorii, persoane, locații sau teme, organizarea manuală clasică prin *drag & drop* de la mouse durează ore sau zile întregi.
 
-**Photo Sorter simplifică totul:**
+**Photo Sorter & Organizer simplifică totul:**
 1. Îți afișează fotografiile una câte una, la rezoluție maximă, direct în browser.
-2. Tu doar tastezi numele persoanei sau al grupului (ex: `Bunici`, `Familie`, `Masa 4`) și apeși **Enter**. Poza este copiată automat în folderul respectiv.
+2. Tu doar tastezi numele categoriei sau al folderului dorit (ex: `Vacanță Grecia`, `Familie`, `Portrete`, `Peisaje`, `De Editat`, `Top 100`) și apeși **Enter**. Fotografia este copiată automat în acel folder.
 3. Apeși săgeata dreaptă `→` pentru următoarea poză.
-4. Dacă o poză este mișcată sau nereușită, o poți șterge definitiv de pe disc cu o singură tastă.
-5. **Nu pierzi niciodată progresul:** poți închide programul oricând; data viitoare când îl deschizi, va continua exact de la poza la care ai rămas!
+4. Dacă o poză este mișcată, dublată sau nereușită, o poți șterge definitiv de pe disc cu o singură tastă.
+5. **Nu pierzi niciodată progresul:** poți închide programul oricând; data viitoare când îl deschizi, continuă exact de la poza la care ai rămas!
 
 ---
 
-## 🌟 De ce este atât de ușor de folosit?
+## 🌟 De ce este atât de utilă?
 
-- 🔒 **100% Sigur și Confidențial:** Totul rulează local, pe calculatorul tău, fără internet. Nicio fotografie nu este urcată pe vreun server extern.
-- 🛡️ **Păstrează fotografiile originale intacte:** Imaginile sunt doar **copiate** în folderele nou create. Metadatele originale (data, ora, rezoluția și calitatea aparatului foto) rămân neatinse.
-- ⚡ **Zero instalări complicate:** Nu trebuie să instalezi biblioteci externe sau module Python suplimentare (`pip`). Funcționează direct cu Python-ul standard.
-- 💻 **Cross-Platform:** Funcționează identic pe **macOS** și pe **Windows** (și Linux).
-- 🚀 **Performanță maximă:** Deschide instantaneu fotografii mari de 30–50 MB fără să blocheze memoria calculatorului.
-
----
-
-## 📖 Ghid de utilizare pas cu pas (Pentru oricine)
-
-Nu ai nevoie de experiență tehnică pentru a folosi acest program. Iată pașii simpli:
-
-### Pasul 1: Pornirea programului
-
-#### 🍎 Pe Mac:
-1. Apasă **`Cmd + Space`** (Spotlight), tastează **Terminal** și apasă **Enter**.
-2. Scrie comanda de mai jos și apasă **Enter**:
-   ```bash
-   cd "~/Desktop/images to folders" && python3 sort_photos.py
-   ```
-*(Se va deschide automat browserul tău implicit: Safari sau Chrome).*
-
-#### 🪟 Pe Windows:
-1. Apasă tasta **`Windows`**, tastează **cmd** (sau PowerShell) și apasă **Enter**.
-2. Scrie comanda de mai jos și apasă **Enter**:
-   ```cmd
-   python sort_photos.py
-   ```
-*(Se va deschide automat browserul tău implicit: Edge sau Chrome).*
+- 🔒 **100% Sigur și Confidențial:** Totul rulează local, pe calculatorul tău, complet offline. Nicio fotografie nu părăsește dispozitivul tău.
+- 🛡️ **Păstrează fotografiile originale intacte:** Imaginile sunt doar **copiate** în folderele nou create. Metadatele originale (data, ora, rezoluția aparatului foto, setările EXIF) rămân neatinse.
+- ⚡ **Zero dependențe externe:** Funcționează exclusiv cu biblioteca standard din Python 3.
+- 💻 **Cross-Platform nativ:** Dialoguri native de sistem (Finder pe macOS, Windows Explorer pe Windows).
+- 🚀 **Performanță ridicată:** Încarcă instantaneu fotografii mari de 30–50 MB fără să consume memoria RAM (streaming în bucăți de 64 KB).
 
 ---
 
-### Pasul 2: Selectarea folderului cu poze
+## 📖 Ghid de utilizare pas cu pas
 
-1. Când se deschide pagina în browser, vei vedea un buton mare în mijloc:
+### Pasul 1: Selectarea folderului cu fotografii
+
+1. La deschiderea aplicației în browser, vei vedea în mijloc butonul:
    > **`📂 Alege folder cu poze`**
-2. Dă click pe el. Se va deschide fereastra ta obișnuită de fișiere (**Finder** pe Mac sau **Windows Explorer** pe Windows).
-3. Selectează folderul în care se află fotografiile de la eveniment și apasă **Open / Selectează folderul**.
-4. Toate fotografiile vor fi încărcate instantaneu și prima poză va apărea pe ecran!
+2. Dă click pe el. Se va deschide fereastra nativă (**Finder** pe Mac sau **Windows Explorer** pe Windows).
+3. Alege folderul în care se află fotografiile și apasă **Open / Selectează folderul**.
+4. Prima poză va apărea imediat pe ecran!
 
 > [!NOTE]
-> Programul va ține minte folderul ales! Data viitoare când îl pornești, nu mai trebuie să cauți folderul; îl va deschide automat.
+> Aplicația reține automat ultimul folder ales. Dacă închizi programul și îl repornești, acesta își amintește automat unde ai rămas.
 
 ---
 
-### Pasul 3: Sortarea fotografiilor în foldere
+### Pasul 2: Sortarea fotografiilor în foldere
 
 1. Privește fotografia afișată pe ecran.
-2. În caseta de jos, tastează numele persoanei sau al categoriei (de exemplu: `Mire`, `Nasul`, `Masa 2`, `Prieteni Liceu`).
+2. În caseta de jos, tastează numele folderului în care vrei să ajungă poza (de exemplu: `Familie`, `Portrete`, `Peisaje`, `De Editat`, `Top 100`).
 3. Apasă tasta **`Enter`**.
-   - Poza curentă va fi copiată instantaneu într-un folder cu acel nume (folderul este creat automat în interiorul folderului tău cu poze).
-   - Vei vedea o etichetă verde care confirmă: `✓ Copiată în: Mire`.
-4. **O poză cu mai multe persoane?** Nicio problemă! Poți tasta imediat alt nume (ex: `Mireasa`) și apeși din nou **Enter**. Aceeași poză va fi copiată și în al doilea folder!
-5. **Butoane rapide:** Pe măsură ce creezi foldere, ele apar ca butoane rapide deasupra tastaturii. Data viitoare când apare aceeași persoană, poți da click direct pe butonul ei sau doar tastezi primele litere!
+   - Poza curentă va fi copiată instantaneu într-un folder cu acel nume (folderul este creat automat chiar în folderul tău cu poze).
+   - Vei vedea o etichetă verde care confirmă: `✓ Copiată în: Familie`.
+4. **O poză aparține mai multor categorii?** Nicio problemă! Poți tasta imediat alt nume (ex: `Favorit`) și apeși din nou **Enter**. Aceeași poză va fi copiată și în al doilea folder!
+5. **Butoane rapide:** Pe măsură ce creezi foldere, ele apar ca butoane rapide deasupra casetei de text. Data viitoare când vrei să trimiți o poză în același folder, poți da click direct pe butonul lui!
 
 ---
 
-### Pasul 4: Navigarea între fotografii
+### Pasul 3: Navigarea între fotografii
 
 - Apasă **`Săgeată Dreapta (→)`** pentru a trece la poza următoare.
 - Apasă **`Săgeată Stânga (←)`** pentru a te întoarce la poza anterioară.
-- *(Poți folosi și butoanele mari cu săgeți `‹` și `›` care plutesc pe marginile pozei).*
+- *(Poți folosi și butoanele mari cu săgeți `‹` și `›` care plutesc pe marginile imaginii).*
 
 ---
 
-### Pasul 5: Ștergerea fotografiilor nereușite
+### Pasul 4: Ștergerea fotografiilor nereușite
 
-Dacă dai peste o fotografie neclară, mișcată sau cu ochii închiși pe care nu vrei să o păstrezi deloc:
-- **Pe Mac:** Apasă **`Command + Backspace`** (adică tasta `⌘` + tasta de ștergere `delete`).
+Dacă dai peste o fotografie neclară, mișcată, dublură sau un cadru ratat pe care nu vrei să îl păstrezi deloc:
+- **Pe Mac:** Apasă **`Command + Backspace`** (adică tasta `⌘` + tasta `delete`).
 - **Pe Windows:** Apasă tasta **`Delete`** (Del).
 - *(Sau dă click pe butonul roșu **`🗑️ Șterge poza`** din partea de jos).*
 
@@ -95,10 +110,10 @@ Poza va fi ștearsă definitiv de pe disc (inclusiv din eventualele foldere în 
 
 ---
 
-### Pasul 6: Închiderea și reluarea lucrului
+### Pasul 5: Închiderea și reluarea lucrului
 
-- **Ai obosit sau vrei să iei o pauză?** Pur și simplu închide fila din browser și oprește Terminalul cu **`Ctrl + C`**.
-- **Când vrei să continui:** Pornește din nou scriptul. Acesta își amintește automat exact la ce poză ai rămas (ex: *Poza 412 din 2.850*) și ce foldere ai creat deja, ca să continui fără să o iei de la capăt!
+- **Vrei să iei o pauză?** Pur și simplu închide fila din browser și oprește Terminalul cu **`Ctrl + C`**.
+- **Când vrei să continui:** Pornește din nou scriptul. Acesta își amintește automat exact la ce poză ai rămas (ex: *Poza 540 din 3.200*) și ce foldere ai creat deja, ca să continui fără să o iei de la capăt!
 
 ---
 
@@ -118,21 +133,21 @@ Poza va fi ștearsă definitiv de pe disc (inclusiv din eventualele foldere în 
 ## ❓ Întrebări Frecvente (FAQ)
 
 ### 1. Se modifică sau se strică pozele mele originale?
-**Nu.** Toate fotografiile originale rămân exact cum au fost descărcate din aparatul foto. La sortare, fișierele sunt doar **duplicate/copiate** în folderele respective. Singura excepție este dacă apeși intenționat pe butonul de ștergere definitivă (`Delete` / `⌘⌫`).
+**Nu.** Toate fotografiile originale rămân exact cum au fost create de cameră sau telefon. La sortare, fișierele sunt doar **copiate** în folderele respective. Singura excepție este dacă apeși intenționat pe comanda de ștergere definitivă (`Delete` / `⌘⌫`).
 
-### 2. Unde se creează folderele cu persoane?
-Toate folderele noi (ex: `Mire`, `Nasul`, `Familie`) sunt create automat chiar **în interiorul folderului principal cu poze** pe care l-ai selectat. Nu se împrăștie prin calculator.
+### 2. Unde se creează folderele noi?
+Toate folderele (ex: `Familie`, `Vacanță`, `Portrete`) sunt create automat **chiar în interiorul folderului principal cu poze** pe care l-ai selectat.
 
 ### 3. Ce formate de imagini sunt acceptate?
-Aplicația recunoaște automat cele mai populare formate foto:
+Aplicația recunoaște automat toate formatele foto uzuale:
 - `.jpg` / `.jpeg`
 - `.png`
 - `.webp`
-- `.heic` (formatul standard iPhone)
+- `.heic` (formatul standard de pe iPhone)
 - `.bmp`, `.tiff`
 
 ### 4. Ce fac dacă portul 8765 este ocupat?
-Nu trebuie să faci nimic! Aplicația este inteligentă: testează automat porturile libere și trece singură la `8766`, `8767` etc., fără să afișeze erori.
+Nu trebuie să faci nimic! Aplicația detectează automat porturile libere și trece singură la `8766`, `8767` etc., fără erori.
 
 ---
 

@@ -503,7 +503,7 @@ def run_server(port: int = 8765):
     url = f"http://127.0.0.1:{assigned_port}"
 
     print("\n" + "=" * 60)
-    print("  Wedding Photo Sorter")
+    print("  Photo Sorter & Organizer")
     if state.source_dir:
         print(f"  Folder activ: {state.source_dir}")
         print(f"  Imagini gasite: {len(state.images)}")
